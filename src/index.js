@@ -13,6 +13,12 @@ module.exports = function (serverless) {
             const deployments = _(template.Resources)
                 .pickBy((resource) => resource.Type === 'AWS::ApiGateway::Deployment');
 
+            // find the stage name that was supplied as a parameter
+            var stageName = serverless.service.provider.stage;
+            if (serverless.variables.options.stage) {
+                stageName = serverless.variables.options.stage;
+            }
+
             // TODO Handle other resources - ApiKey, BasePathMapping, UsagePlan, etc
             _.extend(template.Resources,
                 // Stages, one per deployment.  TODO Support multiple stages?
@@ -20,8 +26,8 @@ module.exports = function (serverless) {
                     .mapValues((deployment, deploymentKey) => ({
                         Type: 'AWS::ApiGateway::Stage',
                         Properties: {
-                            StageName: deployment.Properties.StageName,
-                            Description: `${deployment.Properties.StageName} stage of ${serverless.service.service}`,
+                            StageName: stageName,
+                            Description: `${stageName} stage of ${serverless.service.service}`,
                             RestApiId: {
                                 Ref: 'ApiGatewayRestApi'
                             },
