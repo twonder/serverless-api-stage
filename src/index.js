@@ -37,17 +37,7 @@ module.exports = function (serverless) {
                             Variables: stageSettings.Variables || {},
                             CacheClusterEnabled: stageSettings.CacheClusterEnabled || false,
                             CacheClusterSize: stageSettings.CacheClusterSize || '0.5',
-                            MethodSettings: [
-                                _.defaults(
-                                    stageSettings.MethodSettings || {},
-                                    {
-                                        DataTraceEnabled: true,
-                                        HttpMethod: '*',
-                                        ResourcePath: '/*',
-                                        MetricsEnabled: false
-                                    }
-                                )
-                            ]
+                            MethodSettings: stageSettings.MethodSettings || []
                         }
                     }))
                     .mapKeys((deployment, deploymentKey) => `ApiGatewayStage${_.upperFirst(deployment.Properties.StageName)}`)
